@@ -39,7 +39,6 @@ func AssertCalledWith(t *testing.T, _struct interface{}, method string, with []i
                 }
             }
         }
-        return
     }
 
     t.Errorf("%s::%s was not called with expected args '%v'", reflect.TypeOf(_struct).String(), method, with)
