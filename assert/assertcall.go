@@ -7,7 +7,12 @@ var calls map[string]interface{}
 
 func AddCall(_struct interface{}, method string, with []interface{}){
     if v, ok := calls[reflect.TypeOf(_struct).String()]; ok {
-        v.(map[string]interface{})[method] = append(v.(map[string]interface{})[method].([]interface{}), with)
+        if method_calls, ok := v.(map[string]interface{})[method]; ok {
+            method_calls_val := method_calls.([]interface{})
+            calls[reflect.TypeOf(_struct).String()].(map[string]interface{})[method] = append(method_calls_val, with)
+        } else {
+            v.(map[string]interface{})[method] = []interface{}{with}
+        }
     } else {
         calls[reflect.TypeOf(_struct).String()] = make(map[string]interface{}, 0)
         calls[reflect.TypeOf(_struct).String()].(map[string]interface{})[method] = []interface{}{with}
