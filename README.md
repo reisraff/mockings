@@ -20,7 +20,7 @@ func (self DatabaseWriterMock) Save(entity interface{}) {
 }
 
 func (self DatabaseWriterMock) Remove(entity interface{}) {
-    assertcall.AddAssert(self, "Save", []interface{}{entity})
+    assertcall.AddAssert(self, "Remove", []interface{}{entity})
 }
 
 func GetNotificationService() service.NotificationService {
