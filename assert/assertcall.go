@@ -3,7 +3,6 @@ package assert
 import "testing"
 import "reflect"
 
-
 var asserts map[string]interface{}
 
 func AddAssert(_struct interface{}, method string, with []interface{}){
@@ -23,7 +22,7 @@ func AssertCalledWith(t *testing.T, _struct interface{}, method string, with []i
     if s, ok := asserts[reflect.TypeOf(_struct).String()]; ok {
         if m, ok := s.(map[string]interface{})[method]; ok {
             for _, callargs := range m.([]interface{}) {
-                if len(callargs.([]interface{})) == len(with) {
+                if len(callargs.([]interface{})) != len(with) {
                     continue
                 }
 
@@ -43,3 +42,4 @@ func AssertCalledWith(t *testing.T, _struct interface{}, method string, with []i
 
     t.Errorf("%s::%s was not called with expected args '%v'", reflect.TypeOf(_struct).String(), method, with)
 }
+
