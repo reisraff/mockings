@@ -8,16 +8,18 @@ var calls map[string]interface{}
 var returns map[string]interface{}
 
 func AddCall(_struct interface{}, method string, with []interface{}) []interface{} {
-    if v, ok := calls[reflect.TypeOf(_struct).String()]; ok {
+    ptraddr := fmt.Sprintf("%p", _struct)
+
+    if v, ok := calls[ptraddr]; ok {
         if method_calls, ok := v.(map[string]interface{})[method]; ok {
             method_calls_val := method_calls.([]interface{})
-            calls[reflect.TypeOf(_struct).String()].(map[string]interface{})[method] = append(method_calls_val, with)
+            calls[ptraddr].(map[string]interface{})[method] = append(method_calls_val, with)
         } else {
             v.(map[string]interface{})[method] = []interface{}{with}
         }
     } else {
-        calls[reflect.TypeOf(_struct).String()] = make(map[string]interface{}, 0)
-        calls[reflect.TypeOf(_struct).String()].(map[string]interface{})[method] = []interface{}{with}
+        calls[ptraddr] = make(map[string]interface{}, 0)
+        calls[ptraddr].(map[string]interface{})[method] = []interface{}{with}
     }
 
     return getReturn(_struct, method, with)
@@ -34,7 +36,9 @@ func Print() {
 }
 
 func AssertCalledWith(t *testing.T, _struct interface{}, method string, with []interface{}) {
-    if s, ok := calls[reflect.TypeOf(_struct).String()]; ok {
+    ptraddr := fmt.Sprintf("%p", _struct)
+
+    if s, ok := calls[ptraddr]; ok {
         if m, ok := s.(map[string]interface{})[method]; ok {
             for _, callargs := range m.([]interface{}) {
                 if len(callargs.([]interface{})) != len(with) {
@@ -48,10 +52,10 @@ func AssertCalledWith(t *testing.T, _struct interface{}, method string, with []i
         }
     }
 
-    t.Errorf("%s::%s was not called with expected args '%v'", reflect.TypeOf(_struct).String(), method, with)
+    t.Errorf("%s(%s)::%s was not called with expected args '%v'", reflect.TypeOf(_struct).String(), ptraddr, method, with)
 }
 
-func GetErrorOrNil(_error interface{}) error {
+func ErrorOrNil(_error interface{}) error {
     var result error
     if _error != nil {
         result = _error.(error)
@@ -63,7 +67,9 @@ func GetErrorOrNil(_error interface{}) error {
 }
 
 func getReturn(_struct interface{}, method string, with []interface{}) []interface{} {
-    if s, ok := returns[reflect.TypeOf(_struct).String()]; ok {
+    ptraddr := fmt.Sprintf("%p", _struct)
+
+    if s, ok := returns[ptraddr]; ok {
         if m, ok := s.(map[string]interface{})[method]; ok {
             for _, call := range m.([]interface{}) {
                 if reflect.DeepEqual(with, call.(map[string]interface{})["with"].([]interface{})) {
@@ -77,15 +83,17 @@ func getReturn(_struct interface{}, method string, with []interface{}) []interfa
 }
 
 func Mock(_struct interface{}, method string, with []interface{}, _return []interface{}) {
-    if v, ok := returns[reflect.TypeOf(_struct).String()]; ok {
+    ptraddr := fmt.Sprintf("%p", _struct)
+
+    if v, ok := returns[ptraddr]; ok {
         if method_returns, ok := v.(map[string]interface{})[method]; ok {
             method_returns_val := method_returns.([]interface{})
-            returns[reflect.TypeOf(_struct).String()].(map[string]interface{})[method] = append(method_returns_val, map[string]interface{}{"with": with, "return": _return})
+            returns[ptraddr].(map[string]interface{})[method] = append(method_returns_val, map[string]interface{}{"with": with, "return": _return})
         } else {
             v.(map[string]interface{})[method] = []interface{}{map[string]interface{}{"with": with, "return": _return}}
         }
     } else {
-        returns[reflect.TypeOf(_struct).String()] = make(map[string]interface{}, 0)
-        returns[reflect.TypeOf(_struct).String()].(map[string]interface{})[method] = []interface{}{map[string]interface{}{"with": with, "return": _return}}
+        returns[ptraddr] = make(map[string]interface{}, 0)
+        returns[ptraddr].(map[string]interface{})[method] = []interface{}{map[string]interface{}{"with": with, "return": _return}}
     }
 }
