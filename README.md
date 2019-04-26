@@ -8,6 +8,7 @@ import "errors"
 import "app/app/entity"
 import "app/app/service"
 import mockings "github.com/reisraff/mockings/mockings"
+import assert "github.com/stretchr/testify/assert"
 
 type DatabaseWriterMock struct {
 }
