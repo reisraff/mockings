@@ -7,6 +7,8 @@ import "fmt"
 var calls map[string]interface{}
 var returns map[string]interface{}
 
+const ANY = "ANY"
+
 func AddCall(_struct interface{}, method string, with []interface{}) []interface{} {
     ptraddr := fmt.Sprintf("%p", _struct)
 
@@ -72,6 +74,10 @@ func getReturn(_struct interface{}, method string, with []interface{}) []interfa
     if s, ok := returns[ptraddr]; ok {
         if m, ok := s.(map[string]interface{})[method]; ok {
             for _, call := range m.([]interface{}) {
+                if v, ok := call.(map[string]interface{})["with"].(string); ok && v == ANY {
+                    return call.(map[string]interface{})["return"].([]interface{})
+                }
+
                 if reflect.DeepEqual(with, call.(map[string]interface{})["with"].([]interface{})) {
                     return call.(map[string]interface{})["return"].([]interface{})
                 }
@@ -82,7 +88,7 @@ func getReturn(_struct interface{}, method string, with []interface{}) []interfa
     return []interface{}{}
 }
 
-func Mock(_struct interface{}, method string, with []interface{}, _return []interface{}) {
+func Mock(_struct interface{}, method string, with interface{}, _return []interface{}) {
     ptraddr := fmt.Sprintf("%p", _struct)
 
     if v, ok := returns[ptraddr]; ok {
