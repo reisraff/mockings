@@ -1,3 +1,3 @@
-package mokings
+package mockings
 
 // required for vendoring

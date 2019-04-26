@@ -1,4 +1,4 @@
-package mokings
+package mockings
 
 import "testing"
 import "reflect"
