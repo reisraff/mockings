@@ -65,6 +65,7 @@ func TestCreate(t *testing.T) {
     notification := entity.Notification{}
 
     notificationService := GetNotificationService()
+    notificationService.SetDatabaseWriter(&databaseWriterMock)
     notificationService.Create(&notification)
 
     if notification.GetGuid() == "" {
