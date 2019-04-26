@@ -1,3 +1,3 @@
-package assertcall
+package mokings
 
 // required for vendoring
