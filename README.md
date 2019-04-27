@@ -60,19 +60,21 @@ func GetNotificationService() service.NotificationService {
 }
 
 func TestCreate(t *testing.T) {
-    mockings.ResetAsserts()
+
+    mockings.Reset()
 
     notification := entity.Notification{}
 
     notificationService := GetNotificationService()
+
+    databaseWriterMock := DatabaseWriterMock{}
     notificationService.SetDatabaseWriter(&databaseWriterMock)
+
     notificationService.Create(&notification)
 
-    if notification.GetGuid() == "" {
-        t.Fail()
-    }
+    assert.NotEmpty(t, notification.GetGuid())
 
-    mockings.AssertCalledWith(t, DatabaseWriterMock{}, "Insert", []interface{}{&notification})
+    mockings.AssertCalledWith(t, &databaseWriterMock, "Insert", []interface{}{&notification})
 }
 
 func TestUpdateErrorMovingImage(t *testing.T) {
